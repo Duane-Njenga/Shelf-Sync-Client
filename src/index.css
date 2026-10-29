@@ -1,0 +1,53 @@
+/* Theme colours taken from the Deliverable 2 mock-ups. */
+:root {
+  --shelf-dark: #1f4e79;
+  --shelf-blue: #2e75b6;
+  --bs-primary: var(--shelf-blue);
+  --bs-link-color: var(--shelf-blue);
+  --bs-link-hover-color: var(--shelf-dark);
+}
+
+body {
+  background: #f5f7fa;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--shelf-blue);
+  --bs-btn-border-color: var(--shelf-blue);
+  --bs-btn-hover-bg: var(--shelf-dark);
+  --bs-btn-hover-border-color: var(--shelf-dark);
+  --bs-btn-active-bg: var(--shelf-dark);
+  --bs-btn-active-border-color: var(--shelf-dark);
+  --bs-btn-disabled-bg: var(--shelf-blue);
+  --bs-btn-disabled-border-color: var(--shelf-blue);
+}
+
+.bg-shelf {
+  background: var(--shelf-dark);
+}
+
+.text-shelf {
+  color: var(--shelf-dark);
+}
+
+.auth-brand {
+  background: var(--shelf-dark);
+  color: #fff;
+}
+
+.admin-sidebar {
+  width: 200px;
+  min-height: calc(100vh - 56px);
+  background: #eef1f5;
+}
+
+.admin-sidebar .nav-link {
+  color: #212529;
+  border-radius: 0;
+  padding: 0.75rem 1rem;
+}
+
+.admin-sidebar .nav-link.active {
+  background: var(--shelf-blue);
+  color: #fff;
+}
