@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { isStaff, useAuth } from '../auth/AuthContext.jsx';
 import FormField from '../components/FormField.jsx';
 import AuthLayout from '../layouts/AuthLayout.jsx';
@@ -7,13 +7,17 @@ import AuthLayout from '../layouts/AuthLayout.jsx';
 export default function Login() {
   const { user, login } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({ identifier: '', password: '' });
   const [error, setError] = useState(null);
   const [fields, setFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
+  // If already logged in, redirect based on role
   if (user) {
-    return <Navigate to={location.state?.from?.pathname ?? (isStaff(user) ? '/admin' : '/')} replace />;
+    const targetPath = isStaff(user) ? '/admin' : '/';
+    return <Navigate to={targetPath} replace />;
   }
 
   const update = (event) => setForm({ ...form, [event.target.name]: event.target.value });
@@ -23,8 +27,13 @@ export default function Login() {
     setSubmitting(true);
     setError(null);
     setFields({});
+
     try {
-      await login(form.identifier, form.password);
+      const loggedInUser = await login(form.identifier, form.password);
+      
+      // Explicit role-based navigation immediately upon successful login
+      const destination = isStaff(loggedInUser) ? '/admin' : '/';
+      navigate(destination, { replace: true });
     } catch (err) {
       setError(err.message);
       setFields(err.fields ?? {});

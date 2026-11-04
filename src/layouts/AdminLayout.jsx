@@ -1,58 +1,65 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.jsx';
 
-const MENU = [
-  { to: '/admin', label: 'Dashboard', end: true },
-  { to: '/admin/books', label: 'Books' },
-  { to: '/admin/members', label: 'Members' },
-  { to: '/admin/issue-return', label: 'Issue / Return' },
-  { to: '/admin/reservations', label: 'Reservations' },
-  { to: '/admin/fines', label: 'Fines' },
-  { to: '/admin/reports', label: 'Reports' },
-  { to: '/admin/audit-logs', label: 'Audit Logs', adminOnly: true },
-  { to: '/admin/users', label: 'Users & Roles', adminOnly: true },
-];
-
 export default function AdminLayout() {
   const { user, logout } = useAuth();
-  const items = MENU.filter((item) => !item.adminOnly || user?.role === 'Admin');
 
   return (
-    <>
-      <nav className="navbar bg-shelf navbar-dark">
-        <div className="container-fluid">
-          <Link className="navbar-brand fw-bold" to="/admin">
-            ShelfSync Admin
+    <div className="d-flex min-vh-100 bg-light">
+      {/* Sidebar Navigation */}
+      <aside className="bg-dark text-white p-3 d-flex flex-column" style={{ width: '250px' }}>
+        <h2 className="h5 text-shelf fw-bold mb-4">ShelfSync Admin</h2>
+        <nav className="nav nav-pills flex-column gap-1 flex-grow-1">
+          <NavLink to="/admin" end className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Dashboard
+          </NavLink>
+          <NavLink to="/admin/books" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Books
+          </NavLink>
+          <NavLink to="/admin/members" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Members
+          </NavLink>
+          <NavLink to="/admin/issue-return" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Issue & Return
+          </NavLink>
+          <NavLink to="/admin/reservations" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Reservations
+          </NavLink>
+          <NavLink to="/admin/fines" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Fines
+          </NavLink>
+          <NavLink to="/admin/reports" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Reports
+          </NavLink>
+          <NavLink to="/admin/audit-logs" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Audit Logs
+          </NavLink>
+          <NavLink to="/admin/users" className={({ isActive }) => `nav-link text-white ${isActive ? 'active bg-primary' : ''}`}>
+            Users & Roles
+          </NavLink>
+        </nav>
+
+        {/* Member View Switcher Button */}
+        <div className="mt-auto pt-3 border-top border-secondary">
+          <Link to="/" className="btn btn-outline-warning w-100 mb-2">
+            👁️ Member View
           </Link>
-          <div className="d-flex align-items-center">
-            <span className="navbar-text me-3">
-              {user?.role}: {user?.fullName?.split(' ')[0]}
-            </span>
-            <Link to="/" className="btn btn-sm btn-outline-light me-2">
-              Member view
-            </Link>
-            <button type="button" className="btn btn-sm btn-outline-light" onClick={logout}>
-              Logout
-            </button>
-          </div>
+          <button className="btn btn-outline-danger w-100" onClick={logout}>
+            Logout
+          </button>
         </div>
-      </nav>
-      <div className="d-flex">
-        <aside className="admin-sidebar flex-shrink-0">
-          <ul className="nav flex-column">
-            {items.map((item) => (
-              <li className="nav-item" key={item.to}>
-                <NavLink className="nav-link" to={item.to} end={item.end}>
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </aside>
-        <main className="flex-grow-1 p-4">
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-grow-1 d-flex flex-column">
+        <header className="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+          <span className="fw-semibold">Admin Workspace</span>
+          <span className="badge bg-success">{user?.role} Mode ({user?.fullName})</span>
+        </header>
+        <main className="p-4 flex-grow-1">
           <Outlet />
         </main>
       </div>
-    </>
+    </div>
   );
 }
