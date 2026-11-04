@@ -5,12 +5,26 @@ export default function Loans() {
   const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadLoans = () => {
+    setLoading(true);
     api.get('/loans')
       .then(setLoans)
       .catch(console.error)
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadLoans();
   }, []);
+
+  const handleReturn = async (loanId) => {
+    try {
+      await api.patch(`/loans/${loanId}/return`);
+      loadLoans();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   return (
     <div>
@@ -28,6 +42,7 @@ export default function Loans() {
                 <th>Issue Date</th>
                 <th>Due Date</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -42,6 +57,15 @@ export default function Loans() {
                     <span className={`badge ${l.status === 'Active' ? 'bg-primary' : 'bg-success'}`}>
                       {l.status}
                     </span>
+                  </td>
+                  <td>
+                    {l.status === 'Active' ? (
+                      <button className="btn btn-sm btn-success" onClick={() => handleReturn(l.id)}>
+                        Return Book
+                      </button>
+                    ) : (
+                      <span className="text-muted small">Returned</span>
+                    )}
                   </td>
                 </tr>
               ))}

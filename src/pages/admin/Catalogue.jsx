@@ -29,7 +29,6 @@ export default function Catalogue() {
     <div>
       <h1 className="h4 text-shelf fw-bold mb-4">Book Catalogue</h1>
 
-      {/* Filter and Search Controls */}
       <div className="row g-3 mb-4">
         <div className="col-md-8">
           <input

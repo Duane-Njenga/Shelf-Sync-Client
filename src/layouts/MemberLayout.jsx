@@ -6,17 +6,15 @@ export default function MemberLayout() {
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
-      {/* Sticky Staff Switcher Banner if User is Admin or Librarian */}
       {isStaff(user) && (
         <div className="bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center">
-          <small>👀 Currently viewing catalog as <strong>Member View</strong></small>
+          <small>Currently viewing catalog as <strong>Member View</strong></small>
           <Link to="/admin" className="btn btn-sm btn-warning fw-bold">
             ← Switch Back to Admin Dashboard
           </Link>
         </div>
       )}
 
-      {/* Main Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
         <div className="container">
           <Link className="navbar-brand fw-bold text-shelf" to="/">

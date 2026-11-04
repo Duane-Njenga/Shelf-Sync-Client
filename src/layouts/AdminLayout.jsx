@@ -42,7 +42,7 @@ export default function AdminLayout() {
         {/* Member View Switcher Button */}
         <div className="mt-auto pt-3 border-top border-secondary">
           <Link to="/" className="btn btn-outline-warning w-100 mb-2">
-            👁️ Member View
+            Member View
           </Link>
           <button className="btn btn-outline-danger w-100" onClick={logout}>
             Logout

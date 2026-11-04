@@ -6,7 +6,12 @@ export default function BooksAdmin() {
   const [books, setBooks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showCopyModal, setShowCopyModal] = useState(false);
+  
+  const [selectedBookId, setSelectedBookId] = useState('');
+  const [copyCountInput, setCopyCountInput] = useState(1);
+
   const [form, setForm] = useState({
     title: '',
     isbn: '',
@@ -40,7 +45,7 @@ export default function BooksAdmin() {
     e.preventDefault();
     try {
       await api.post('/books', form);
-      setShowModal(false);
+      setShowAddModal(false);
       setForm({
         title: '',
         isbn: '',
@@ -52,6 +57,18 @@ export default function BooksAdmin() {
         copyCount: 1,
         description: '',
       });
+      loadData();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const handleUpdateCopies = async (e) => {
+    e.preventDefault();
+    if (!selectedBookId) return alert('Please select a book');
+    try {
+      await api.patch(`/books/${selectedBookId}/copies`, { copyCount: Number(copyCountInput) });
+      setShowCopyModal(false);
       loadData();
     } catch (err) {
       alert(err.message);
@@ -72,9 +89,14 @@ export default function BooksAdmin() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h4 text-shelf fw-bold m-0">Manage Books</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          + Add New Book
-        </button>
+        <div className="d-flex gap-2">
+          <button className="btn btn-outline-primary" onClick={() => setShowCopyModal(true)}>
+            ⚙️ Adjust Copies
+          </button>
+          <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
+            + Add New Book
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -118,14 +140,67 @@ export default function BooksAdmin() {
         </div>
       )}
 
+      {/* Adjust Copy Count Modal */}
+      {showCopyModal && (
+        <div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Adjust Book Physical Copies</h5>
+                <button type="button" className="btn-close" onClick={() => setShowCopyModal(false)}></button>
+              </div>
+              <form onSubmit={handleUpdateCopies}>
+                <div className="modal-body d-flex flex-column gap-3">
+                  <div>
+                    <label className="form-label fw-semibold">Select Book</label>
+                    <select
+                      className="form-select"
+                      value={selectedBookId}
+                      onChange={(e) => {
+                        setSelectedBookId(e.target.value);
+                        const b = books.find((x) => String(x.id) === e.target.value);
+                        if (b) setCopyCountInput(b.totalCopies);
+                      }}
+                      required
+                    >
+                      <option value="">-- Choose Book --</option>
+                      {books.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.title} (Current Total: {b.totalCopies})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="form-label fw-semibold">Total Physical Copies</label>
+                    <input
+                      type="number"
+                      min="0"
+                      className="form-control"
+                      value={copyCountInput}
+                      onChange={(e) => setCopyCountInput(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={() => setShowCopyModal(false)}>Cancel</button>
+                  <button type="submit" className="btn btn-success">Save Copies</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add Book Modal */}
-      {showModal && (
+      {showAddModal && (
         <div className="modal d-block bg-dark bg-opacity-50" tabIndex="-1">
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Add New Book</h5>
-                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                <button type="button" className="btn-close" onClick={() => setShowAddModal(false)}></button>
               </div>
               <form onSubmit={handleAdd}>
                 <div className="modal-body row g-3">
@@ -165,7 +240,7 @@ export default function BooksAdmin() {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                  <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>Cancel</button>
                   <button type="submit" className="btn btn-primary">Save Book</button>
                 </div>
               </form>
