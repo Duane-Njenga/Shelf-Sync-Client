@@ -6,11 +6,12 @@ import MemberLayout from './layouts/MemberLayout.jsx';
 // Member pages
 import Account from './pages/Account.jsx';
 import Catalogue from './pages/admin/Catalogue.jsx';
+import Help from './pages/help.jsx';
 import Login from './pages/Login.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Register from './pages/Register.jsx';
 
-// Admin pages (inside admin subfolder)
+// Admin pages
 import AuditLogs from './pages/admin/AuditLogs.jsx';
 import BooksAdmin from './pages/admin/BooksAdmin.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
@@ -37,6 +38,7 @@ export default function App() {
       >
         <Route index element={<Catalogue />} />
         <Route path="account" element={<Account />} />
+        <Route path="help" element={<Help />} />
       </Route>
 
       {/* Admin Panel */}

@@ -5,6 +5,7 @@ import FormField from '../../components/FormField.jsx';
 export default function BooksAdmin() {
   const [books, setBooks] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCopyModal, setShowCopyModal] = useState(false);
@@ -85,9 +86,19 @@ export default function BooksAdmin() {
     }
   };
 
+  // Search Filter Handler
+  const filteredBooks = books.filter((b) => {
+    const q = search.toLowerCase();
+    return (
+      b.title.toLowerCase().includes(q) ||
+      (b.isbn && b.isbn.toLowerCase().includes(q)) ||
+      (b.authors && b.authors.toLowerCase().includes(q))
+    );
+  });
+
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h1 className="h4 text-shelf fw-bold m-0">Manage Books</h1>
         <div className="d-flex gap-2">
           <button className="btn btn-outline-primary" onClick={() => setShowCopyModal(true)}>
@@ -97,6 +108,17 @@ export default function BooksAdmin() {
             + Add New Book
           </button>
         </div>
+      </div>
+
+      {/* Book Search Bar */}
+      <div className="mb-4">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search books by title, author, or ISBN to delete or edit..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       {loading ? (
@@ -116,25 +138,33 @@ export default function BooksAdmin() {
               </tr>
             </thead>
             <tbody>
-              {books.map((b) => (
-                <tr key={b.id}>
-                  <td><code>{b.isbn}</code></td>
-                  <td className="fw-semibold">{b.title}</td>
-                  <td>{b.authors || 'N/A'}</td>
-                  <td><span className="badge bg-secondary">{b.category || 'General'}</span></td>
-                  <td>{b.shelfLocation || 'N/A'}</td>
-                  <td>
-                    <span className="badge bg-info text-dark">
-                      {b.availableCopies} / {b.totalCopies} Available
-                    </span>
-                  </td>
-                  <td>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(b.id)}>
-                      Remove
-                    </button>
+              {filteredBooks.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-muted text-center py-3">
+                    No matching books found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredBooks.map((b) => (
+                  <tr key={b.id}>
+                    <td><code>{b.isbn}</code></td>
+                    <td className="fw-semibold">{b.title}</td>
+                    <td>{b.authors || 'N/A'}</td>
+                    <td><span className="badge bg-secondary">{b.category || 'General'}</span></td>
+                    <td>{b.shelfLocation || 'N/A'}</td>
+                    <td>
+                      <span className="badge bg-info text-dark">
+                        {b.availableCopies} / {b.totalCopies} Available
+                      </span>
+                    </td>
+                    <td>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(b.id)}>
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

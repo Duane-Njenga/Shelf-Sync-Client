@@ -8,7 +8,7 @@ export default function MemberLayout() {
     <div className="d-flex flex-column min-vh-100 bg-light">
       {isStaff(user) && (
         <div className="bg-dark text-white px-3 py-2 d-flex justify-content-between align-items-center">
-          <small>Currently viewing catalog as <strong>Member View</strong></small>
+          <small>👀 Currently viewing catalog as <strong>Member View</strong></small>
           <Link to="/admin" className="btn btn-sm btn-warning fw-bold">
             ← Switch Back to Admin Dashboard
           </Link>
@@ -21,9 +21,15 @@ export default function MemberLayout() {
             ShelfSync
           </Link>
           <div className="d-flex align-items-center gap-3">
-            <span className="text-light small">Welcome, {user?.fullName}</span>
+            <span className="text-light small d-none d-md-inline">Welcome, {user?.fullName}</span>
+            <Link to="/" className="btn btn-sm btn-outline-light">
+              Catalogue
+            </Link>
             <Link to="/account" className="btn btn-sm btn-outline-light">
               My Account
+            </Link>
+            <Link to="/help" className="btn btn-sm btn-outline-info">
+              Help
             </Link>
             <button className="btn btn-sm btn-danger" onClick={logout}>
               Logout
