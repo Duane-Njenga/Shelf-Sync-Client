@@ -7,10 +7,10 @@ export default function Fines() {
   const [sendingId, setSendingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const loadFines = () => {
+  const loadFines = (force = false) => {
     setLoading(true);
     api
-      .get('/fines')
+      .get('/fines', { force })
       .then((data) => {
         setFines(data);
         setPhoneInputs((prev) => {
@@ -54,7 +54,7 @@ export default function Fines() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h4 text-shelf fw-bold m-0">Overdue Fines Management</h1>
-        <button className="btn btn-sm btn-outline-secondary" onClick={loadFines}>
+        <button className="btn btn-sm btn-outline-secondary" onClick={() => loadFines(true)}>
           ↻ Refresh Status
         </button>
       </div>
@@ -122,4 +122,4 @@ export default function Fines() {
       )}
     </div>
   );
-} 
+}
