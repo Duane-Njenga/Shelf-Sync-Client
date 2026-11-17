@@ -1,48 +1,29 @@
-export class ApiError extends Error {
-  constructor(status, code, message, fields = {}) {
-    super(message);
-    this.status = status;
-    this.code = code;
-    this.fields = fields;
-  }
-}
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
-async function request(method, path, body) {
-  let response;
-  try {
-    response = await fetch(`/api${path}`, {
-      method,
-      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      credentials: 'same-origin',
-    });
-  } catch {
-    throw new ApiError(0, 'NETWORK', 'Cannot reach the server. Check your connection and try again.');
-  }
+async function request(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
 
-  if (response.status === 204) return null;
+  if (res.status === 204) return null;
 
-  let data = null;
-  try {
-    data = await response.json();
-  } catch {}
-
-  if (!response.ok) {
-    const error = data?.error;
-    throw new ApiError(
-      response.status,
-      error?.code ?? 'ERROR',
-      error?.message ?? 'Something went wrong. Please try again.',
-      error?.fields ?? {},
-    );
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    const err = new Error(data?.error?.message || `Request failed (${res.status})`);
+    err.fields = data?.error?.fields;
+    throw err;
   }
   return data;
 }
 
 export const api = {
-  get: (path) => request('GET', path),
-  post: (path, body = {}) => request('POST', path, body),
-  put: (path, body = {}) => request('PUT', path, body),
-  patch: (path, body = {}) => request('PATCH', path, body),
-  delete: (path) => request('DELETE', path),
+  get: (path) => request(path),
+  post: (path, body) => request(path, { method: 'POST', body: JSON.stringify(body) }),
+  patch: (path, body) => request(path, { method: 'PATCH', body: JSON.stringify(body) }),
+  delete: (path) => request(path, { method: 'DELETE' }),
 };
